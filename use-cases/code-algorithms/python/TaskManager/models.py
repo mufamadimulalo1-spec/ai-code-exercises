@@ -14,7 +14,8 @@ class TaskStatus(Enum):
     IN_PROGRESS = "in_progress"
     REVIEW = "review"
     DONE = "done"
-
+    ABANDONED = "abandoned"
+#changes#
 class Task:
     def __init__(self, title, description="", priority=TaskPriority.MEDIUM,
                  due_date=None, tags=None):
@@ -27,6 +28,7 @@ class Task:
         self.updated_at = self.created_at
         self.due_date = due_date
         self.completed_at = None
+        self.abandoned_at = None
         self.tags = tags or []
 
     def update(self, **kwargs):
@@ -44,3 +46,10 @@ class Task:
         if not self.due_date:
             return False
         return self.due_date < datetime.now() and self.status != TaskStatus.DONE
+
+    def should_be_abandoned(self):
+        if not self.due_date or self.status == TaskStatus.DONE:
+            return False
+        days_overdue = (datetime.now() - self.due_date).days
+        return days_overdue > 7 and self.priority != TaskPriority.HIGH
+        #changes#

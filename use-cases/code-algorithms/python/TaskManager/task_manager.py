@@ -116,3 +116,14 @@ class TaskManager:
             "completed_last_week": completed_recently
         }
 
+    def abandon_overdue_tasks(self):
+        abandoned_count = 0
+        for task in self.storage.get_all_tasks():
+            if task.should_be_abandoned():
+                task.status = TaskStatus.ABANDONED
+                task.updated_at = datetime.now()
+                abandoned_count += 1
+        self.storage.save()
+        return abandoned_count
+    #changes#
+
